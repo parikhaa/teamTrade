@@ -1,4 +1,4 @@
-create or replace PROCEDURE jude_trade
+create or replace PROCEDURE trade_procedure
 
 (arg_player1 in number, arg_player2 in number, arg_owner_id in number)
 is
@@ -116,11 +116,11 @@ where player_id = arg_player2 AND ret_date is NULL;
 
 update players
 set team = ws_player2_team_id
-where id = arg_player1
+where id = arg_player1;
 
 update players
 set team = ws_player1_team_id
-where id = arg_player2
+where id = arg_player2;
 
 --new transaction
 INSERT INTO transactions 
