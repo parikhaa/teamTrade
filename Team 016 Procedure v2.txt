@@ -1,0 +1,102 @@
+CREATE OR REPLACE PROCEDURE trade
+
+(arg_player1 in number, arg_player2 in number)
+is
+ws_player1_team_id number;
+ws_player1_position_id number;
+ws_player1_salary number;
+ws_player1_team_sal_cap number;
+ws_player1_pos_count_team2 number;
+ws_team1_pos_count number;
+ws_player1_trade_timer number;
+
+ws_player2_team_id number;
+ws_player2_position_id number;
+ws_player2_salary number;
+ws_player2_team_sal_cap number;
+ws_player2_pos_count_team1 number;
+ws_player2_team_pos_count number;
+ws_player2_trade_timer number;
+
+
+team1_sal_cap_over_limit exception;
+team2_sal_cap_over_limit exception;
+player1_not_tradable exception;
+player2_not_tradable exception;
+raise too_many_players_team1 exception;
+raise too_many_players_team2 exception;
+player1_traded_within_3_min exception;
+player2_traded_within_3_min exception;
+
+BEGIN
+
+-- get data into working storage (player salary, team salary caps available, player positions, player teams)
+select max(p.salary), max(t.salarycap_avail), max(p.position_id), max(p.team) 
+into ws_player1_salary, ws_player1_team_sal_cap, ws_player1_position_id, ws_player1_team_id
+from players p join teams t on p.team = t.id
+where p.id = arg_player1
+
+select max(p.salary), max(t.salarycap_avail), max(p.position_id), max(p.team) 
+into ws_player2_salary, ws_player2_team_sal_cap, ws_player2_position_id, ws_player2_team_id
+from players p join teams t on p.team = t.id
+where p.id = arg_player2
+
+-- get the position count for each player on the other team
+select count(*) into ws_player1_pos_count_team2
+from players 
+where team = ws_player2_team_id and position_id = ws_player1_position_id
+
+select count(*) into ws_player2_pos_count_team1
+from players 
+where team = ws_player1_team_id and position_id = ws_player2_position_id
+
+-- get the number of different positions on each team that are different from the acquired player's position
+select count(distinct position) into ws_team1_pos_count from players
+where team = ws_player1_team_id and position <> ws_player2_position_id;
+
+select count(distinct position) into ws_team2_pos_count from players
+where team = ws_player2_team_id and position <> ws_player1_position_id;
+
+-- get data relevant to the 3 minute trade delay
+select max(trade_time) into ws_player1_trade_timer
+from transactions 
+where player_id = arg_player1
+
+select to_char(sysdate,'hhmi') - to_char(max(trade_time), 'hhmi') into ws_player1_trade_timer
+from transactions 
+where player_id = arg_player1
+
+select to_char(sysdate,'hhmi') - to_char(max(trade_time), 'hhmi') into ws_player2_trade_timer
+from transactions 
+where player_id = arg_player2
+
+
+--tests:
+
+--if salary caps are gonna be restrictive:
+if ws_player1_team_sal_total-ws_player1_salary+ws_player2_salary > ws_player1_team_sal_cap
+	then raise team1_sal_cap_over_limit;
+end if;
+
+if ws_player2_team_sal_total-ws_player2_salary+ws_player1_salary > ws_player2_team_sal_cap
+	then raise team2_sal_cap_over_limit;
+end if;
+
+
+-- makes sure that if the players aren't in the same position that there's only 1 person in that position already
+if ws_player1_position_id != ws_player2_position_id
+	then if player1_pos_count_team2 > 1
+		then raise too_many_players_team2;
+	elsif player2_pos_count_team1 > 1
+		then raise too_many_players_team1;
+	end if;
+end if;
+
+if ws_player1_trade_timer < 3
+ then raise player1_traded_within_3_min;
+end if;
+
+if ws_player2_trade_timer < 3
+ then raise player2_traded_within_3_min;
+end if;
+
