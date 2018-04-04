@@ -1,0 +1,49 @@
+drop table transactions;
+drop table players;
+drop table teams;
+drop table owners;
+                                                                          
+create table owners
+ (id  number(8) primary key,
+  name  varchar2(15) not null );
+
+ create table teams
+ (id  number(1) primary key,
+  name  varchar2(25) not null,
+  salarycap  number(8),
+  owner  number(8) references owners(id) );
+
+create table players
+ (id  number(3) primary key,
+  name varchar2(15) not null,
+  team  number(1) references teams(id),
+  position  varchar2(15),
+  position_id number(1) not null,
+  salary  number(8) );
+
+create table transactions
+ (id  number(3) primary key,
+  player_id  number(3) references players(id),
+  old_team  number(1) references teams(id),
+  new_team number(1) references teams(id),
+  approved_by number(8) references owners(id),
+  trade_time date not null,
+  eff_date  date not null,
+  ret_date  date);
+
+insert into owners values (34358354,'Jude Capachiet');
+
+
+insert into teams values (1,'Team 1',3000000,34358354);
+insert into teams values (2,'Team 2',300000,34358354);
+insert into teams values (3,'Team 3',5000000,34358354);
+
+
+insert into players values (1,'John Base',1,'pitcher',1,100000);
+insert into players values (2,'Jerry Ball',1,'catcher',2,100000);
+insert into players values (3,'Tom Player',2,'catcher',2,100000);
+insert into players values (4,'Sam Ryan',2,'pitcher',1,100000);
+insert into players values (5,'Cam Ryan',2,'pitcher',1,100000);
+insert into players values (6,'Terry Ryan',3,'first base',3,100000);
+
+insert into transactions values (1,6,1,3,34358354,sysdate,sysdate+5,null);
