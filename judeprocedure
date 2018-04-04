@@ -1,6 +1,6 @@
 create or replace PROCEDURE jude_trade
 
-(arg_player1 in number, arg_player2 in number)
+(arg_player1 in number, arg_player2 in number, arg_owner_id in number)
 is
 ws_player1_team_id number;
 ws_player1_position_id number;
@@ -18,6 +18,7 @@ ws_player2_team_sal_total number;
 ws_player2_pos_count_team1 number;
 ws_player2_trade_timer number;
 
+ws_last_transaction number;
 
 team1_sal_cap_over_limit exception;
 team2_sal_cap_over_limit exception;
@@ -72,6 +73,8 @@ select to_char(sysdate,'hhmi')- to_char(max(trade_time), 'hhmi') into ws_player2
 from transactions 
 where player_id = arg_player2;
 
+select max(id) into ws_last_transaction
+from transactions;
 
 --tests:
 
@@ -101,5 +104,21 @@ end if;
 if ws_player2_trade_timer < 3
  then raise player2_traded_within_3_min;
 end if;
+
+--updates
+update transactions
+set ret_date = sysdate
+where player_id = arg_player1 AND ret_date is NULL;
+
+update transactions
+set ret_date = sysdate
+where player_id = arg_player2 AND ret_date is NULL;
+
+--new transaction
+INSERT INTO transactions 
+VALUES (ws_last_transaction + 1, arg_player1, ws_player1_team_id, ws_player2_team_id, arg_owner_id, sysdate, sysdate, null );
+
+INSERT INTO transactions 
+VALUES (ws_last_transaction + 2, arg_player2, ws_player2_team_id, ws_player1_team_id, arg_owner_id, sysdate, sysdate, null );
 
 end;
