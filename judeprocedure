@@ -1,0 +1,105 @@
+create or replace PROCEDURE jude_trade
+
+(arg_player1 in number, arg_player2 in number)
+is
+ws_player1_team_id number;
+ws_player1_position_id number;
+ws_player1_salary number;
+ws_player1_team_sal_cap number;
+ws_player1_team_sal_total number;
+ws_player1_pos_count_team2 number;
+ws_player1_trade_timer number;
+
+ws_player2_team_id number;
+ws_player2_position_id number;
+ws_player2_salary number;
+ws_player2_team_sal_cap number;
+ws_player2_team_sal_total number;
+ws_player2_pos_count_team1 number;
+ws_player2_trade_timer number;
+
+
+team1_sal_cap_over_limit exception;
+team2_sal_cap_over_limit exception;
+player1_not_tradable exception;
+player2_not_tradable exception;
+too_many_players_team1 exception;
+too_many_players_team2 exception;
+player1_traded_within_3_min exception;
+player2_traded_within_3_min exception;
+
+BEGIN
+
+--get data into workspace
+select max(salary), max(salarycap), max(position_id), max(team) 
+into ws_player1_salary, ws_player1_team_sal_cap, ws_player1_position_id, ws_player1_team_id
+from players join teams on players.team = teams.id
+where players.id = arg_player1;
+
+select max(salary), max(salarycap), max(position_id), max(team) 
+into ws_player2_salary, ws_player2_team_sal_cap, ws_player2_position_id, ws_player2_team_id
+from players join teams on players.team = teams.id
+where players.id = arg_player2;
+
+
+select sum(salary) into ws_player1_team_sal_total
+from players join teams on players.team = teams.id
+where teams.id = ws_player1_team_id
+group by teams.id;
+
+select sum(salary) into ws_player2_team_sal_total
+from players join teams on players.team = teams.id
+where teams.id = ws_player2_team_id
+group by teams.id;
+
+select count(*) into ws_player1_pos_count_team2
+from players 
+where team = ws_player2_team_id and position_id = ws_player1_position_id;
+
+select count(*) into ws_player2_pos_count_team1
+from players 
+where team = ws_player1_team_id and position_id = ws_player2_position_id;
+
+--select max(trade_time) into ws_player1_trade_timer
+--from transactions 
+--where player_id = arg_player1;
+
+select to_char(sysdate,'hhmi')- to_char(max(trade_time), 'hhmi') into ws_player1_trade_timer
+from transactions 
+where player_id = arg_player1;
+
+select to_char(sysdate,'hhmi')- to_char(max(trade_time), 'hhmi') into ws_player2_trade_timer
+from transactions 
+where player_id = arg_player2;
+
+
+--tests:
+
+--if salary caps are gonna be restrictive:
+if ws_player1_team_sal_total-ws_player1_salary+ws_player2_salary > ws_player1_team_sal_cap
+	then raise team1_sal_cap_over_limit;
+end if;
+
+if ws_player2_team_sal_total-ws_player2_salary+ws_player1_salary > ws_player2_team_sal_cap
+	then raise team2_sal_cap_over_limit;
+end if;
+
+
+-- makes sure that if the players aren't in the same position that there's only 1 person in that position already
+if ws_player1_position_id != ws_player2_position_id
+	then if ws_player1_pos_count_team2 > 1
+		then raise too_many_players_team2;
+	elsif ws_player2_pos_count_team1 > 1
+		then raise too_many_players_team1;
+	end if;
+end if;
+
+if ws_player1_trade_timer < 3
+ then raise player1_traded_within_3_min;
+end if;
+
+if ws_player2_trade_timer < 3
+ then raise player2_traded_within_3_min;
+end if;
+
+end;
