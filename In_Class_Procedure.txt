@@ -1,0 +1,50 @@
+Let's assign doctors that don't have patients
+
+create or replace procedure assign_dr
+(arg_pat in number)
+is
+ws_patient number;
+ws_disease varchar2(10);
+bad_patient exception;
+no_disease exception;
+no_doctor exception;
+
+begin
+select max(id), max(dis_code) into ws_patient, ws_disease
+from patient
+where id = arg_pat
+ and release_dt is null 
+ and doctor is null
+ and dis_code is not null;
+
+if ws_patient is null
+  then raise bad_patient;
+end if;
+
+if ws_disease is null
+  then raise no_disease;
+end if;
+
+if ws_disease is not null
+  then select max(id) into ws_doctor 
+       from expertise
+       where disease = ws_disease;
+end if;
+
+if ws_doctor is null
+  then raise no_doctor;
+end if;
+
+update patient
+set doctor = ws_doctor
+where id = arg_pat;
+-- end if;
+
+exceptions
+when bad_patient
+   then raise_application_error(-20000, 'Patient not Eligible');  
+when no_disease
+   then raise_application_error(-20001, 'No Patient disease');
+when no_doctor
+   then raise_application_error(-20000, 'No Eligible Doctor');  
+end;
