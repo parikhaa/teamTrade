@@ -114,6 +114,14 @@ update transactions
 set ret_date = sysdate
 where player_id = arg_player2 AND ret_date is NULL;
 
+update players
+set team = ws_player2_team_id
+where id = arg_player1
+
+update players
+set team = ws_player1_team_id
+where id = arg_player2
+
 --new transaction
 INSERT INTO transactions 
 VALUES (ws_last_transaction + 1, arg_player1, ws_player1_team_id, ws_player2_team_id, arg_owner_id, sysdate, sysdate, null );
@@ -122,3 +130,5 @@ INSERT INTO transactions
 VALUES (ws_last_transaction + 2, arg_player2, ws_player2_team_id, ws_player1_team_id, arg_owner_id, sysdate, sysdate, null );
 
 end;
+
+-- ask TA about pool, total salary/roster count (queries in procedure but not in tables)
