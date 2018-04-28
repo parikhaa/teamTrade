@@ -89,3 +89,5 @@ insert into players values (33,'Mookie Betts',null,3,100000);
 insert into players values (34,'Aaron Judge',null,3,100000);
 insert into players values (35,'JD Martinez',null,3,100000);
 insert into players values (36,'Jon Lester',null,3,100000);
+
+create sequence transactionnum increment by 1 start with 101
