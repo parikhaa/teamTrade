@@ -53,12 +53,12 @@ insert into positions values (1,'Pitcher');
 insert into positions values (2,'Catcher');
 insert into positions values (3,'First Base');
 
-insert into players values (1,'Chris Sale',null,1,100000);
-insert into players values (2,'David Ortiz',null,1,100000);
-insert into players values (3,'Derek Jeter',null,1,100000);
-insert into players values (4,'Alex Rodriguez',null,1,100000);
-insert into players values (5,'Vladimir Guerrero',null,1,100000);
-insert into players values (6,'Ken Griffey Jr.',null,1,100000);
+insert into players values (1,'Chris Sale',1,1,100000);
+insert into players values (2,'David Ortiz',2,1,100000);
+insert into players values (3,'Derek Jeter',3,1,100000);
+insert into players values (4,'Alex Rodriguez',4,1,100000);
+insert into players values (5,'Vladimir Guerrero',5,1,100000);
+insert into players values (6,'Ken Griffey Jr.',6,1,100000);
 insert into players values (7,'Babe Ruth',null,1,100000);
 insert into players values (8,'Mickey Mantle',null,1,100000);
 insert into players values (9,'Cy Young',null,1,100000);
