@@ -127,10 +127,10 @@ where id = arg_player2;
 
 --new transaction
 INSERT INTO transactions 
-VALUES (ws_last_transaction + 1, arg_player1, ws_player1_team_id, ws_player2_team_id, arg_owner_id, sysdate, sysdate, null );
+VALUES (transactionnum.nextval, arg_player1, ws_player1_team_id, ws_player2_team_id, arg_owner_id, sysdate, sysdate, null );
 
 INSERT INTO transactions 
-VALUES (ws_last_transaction + 2, arg_player2, ws_player2_team_id, ws_player1_team_id, arg_owner_id, sysdate, sysdate, null );
+VALUES (transactionnum.nextval, arg_player2, ws_player2_team_id, ws_player1_team_id, arg_owner_id, sysdate, sysdate, null );
 
 --exceptions codes and error messages
 exception
@@ -160,5 +160,3 @@ when player2_traded_within_3_min
    
 
 end;
-
--- ask TA about pool, total salary/roster count (queries in procedure but not in tables)
