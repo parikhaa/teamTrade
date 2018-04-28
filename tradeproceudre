@@ -122,6 +122,9 @@ update players
 set team = ws_player1_team_id
 where id = arg_player2;
 
+
+--update transaction history not sure how to do this
+
 --new transaction
 INSERT INTO transactions 
 VALUES (ws_last_transaction + 1, arg_player1, ws_player1_team_id, ws_player2_team_id, arg_owner_id, sysdate, sysdate, null );
