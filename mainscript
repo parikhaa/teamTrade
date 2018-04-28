@@ -20,7 +20,7 @@ create table positions
   
 create table players
  (id  number(3) primary key,
-  name varchar2(15) not null,
+  name varchar2(25) not null,
   team  number(1) references teams(id),
   position_id number(1) not null references positions(id),
   salary  number(8) );
