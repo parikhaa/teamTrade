@@ -3,6 +3,7 @@ drop table players;
 drop table positions;
 drop table teams;
 drop table owners;
+drop sequence transactionnum;
                                                                           
 create table owners
  (id  number(8) primary key,
