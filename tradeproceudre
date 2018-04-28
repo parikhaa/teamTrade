@@ -129,6 +129,33 @@ VALUES (ws_last_transaction + 1, arg_player1, ws_player1_team_id, ws_player2_tea
 INSERT INTO transactions 
 VALUES (ws_last_transaction + 2, arg_player2, ws_player2_team_id, ws_player1_team_id, arg_owner_id, sysdate, sysdate, null );
 
+--exceptions codes and error messages
+exceptions
+when team1_sal_cap_over_limit
+   then raise_application_error(-20000, 'team 1 sal cap over limit');  
+   
+when team2_sal_cap_over_limit
+   then raise_application_error(-20001, 'team 2 sal cap over limit');  
+   
+when player1_not_tradable
+   then raise_application_error(-20002, 'player 1 not tradable');
+   
+when player2_not_tradable
+   then raise_application_error(-20003, 'player 2 not tradable'); 
+   
+when too_many_players_team1
+   then raise_application_error(-20004, 'too many players on team 1');  
+   
+when too_many_players_team2
+   then raise_application_error(-20005, 'too many players on team 2');  
+   
+when player1_traded_within_3_min
+   then raise_application_error(-20006, 'player 1 traded within 3 min');
+   
+when player2_traded_within_3_min
+   then raise_application_error(-20007, 'player 2 traded within 3 min');
+   
+
 end;
 
 -- ask TA about pool, total salary/roster count (queries in procedure but not in tables)
