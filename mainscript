@@ -35,11 +35,18 @@ create table transactions
   ret_date  date);
 
 insert into owners values (34358354,'Jude Capachietti');
+insert into owners values (28815390,'Ben Padden');
+insert into owners values (15280817,'Amir Parikh');
+insert into owners values (88874460,'Carter Montgomery');
+insert into owners values (80069894,'Nick Assad');
+insert into owners values (59358385,'Ryan Morgan');
 
-
-insert into teams values (1,'Team 1',3000000,34358354);
-insert into teams values (2,'Team 2',300000,34358354);
-insert into teams values (3,'Team 3',5000000,34358354);
+insert into teams values (1,'Team 1',300000,34358354);
+insert into teams values (2,'Team 2',300000,28815390);
+insert into teams values (3,'Team 3',300000,15280817);
+insert into teams values (4,'Team 4',300000,88874460);
+insert into teams values (5,'Team 5',300000,80069894);
+insert into teams values (6,'Team 6',300000,59358385);
 
 insert into positions values (1,'Pitcher');
 insert into positions values (2,'Catcher');
