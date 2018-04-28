@@ -133,7 +133,7 @@ INSERT INTO transactions
 VALUES (ws_last_transaction + 2, arg_player2, ws_player2_team_id, ws_player1_team_id, arg_owner_id, sysdate, sysdate, null );
 
 --exceptions codes and error messages
-exceptions
+exception
 when team1_sal_cap_over_limit
    then raise_application_error(-20000, 'team 1 sal cap over limit');  
    
