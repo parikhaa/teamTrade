@@ -1,6 +1,6 @@
 create or replace PROCEDURE pool_procedure
 
-(arg_player1 in number, arg_team, arg_owner_id in number)
+(arg_player1 in number, arg_team in number, arg_owner_id in number)
 is
 ws_player1_position_id number;
 ws_player1_salary number;
@@ -22,12 +22,12 @@ BEGIN
 select max(salary), max(position_id)
 into ws_player1_salary, ws_player1_position_id
 from players
-where id = arg_player1
+where id = arg_player1;
 
 select max(salarycap)
 into ws_player1_team_sal_cap
 from teams
-where id = arg_team
+where id = arg_team;
 
 select sum(salary) into ws_player1_team_sal_total
 from players join teams on players.team = teams.id
@@ -36,7 +36,7 @@ group by teams.id;
 
 select count(*) into ws_player1_pos_count_team
 from players 
-where team = arg_team
+where team = arg_team;
 
 select to_char(sysdate,'hhmi') - to_char(max(trade_time), 'hhmi') into ws_player1_trade_timer
 from transactions 
@@ -82,7 +82,7 @@ where player_id = arg_player1;
 
 --new transaction
 INSERT INTO transactions 
-VALUES (ws_last_transaction + 1, arg_player1, null, arg_team, arg_owner_id, sysdate, sysdate, null );
+VALUES (transactionnum.nextval, arg_player1, null, arg_team, arg_owner_id, sysdate, sysdate, null );
 
 
 --exceptions codes and error messages
@@ -93,7 +93,7 @@ when team1_sal_cap_over_limit
 when player1_not_tradable
    then raise_application_error(-20002, 'player 1 not tradable');
    
-when too_many_players_team1
+when too_many_players_team
    then raise_application_error(-20004, 'too many players on team 1');  
    
 when player1_traded_within_3_min
