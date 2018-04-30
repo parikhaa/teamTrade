@@ -1,0 +1,112 @@
+create or replace PROCEDURE pool_procedure
+
+(arg_player1 in number, arg_team in number, arg_position in number, arg_owner_id in number)
+is
+ws_player1_position_id number;
+ws_player1_salary number;
+ws_player1_team_sal_cap number;
+ws_player1_team_sal_total number;
+ws_player1_team_count number;
+ws_player1_pos_count_team number;
+ws_player1_trade_timer number;
+
+ws_last_transaction number;
+
+team1_sal_cap_over_limit exception;
+player1_not_tradable exception;
+too_many_players_team exception;
+player1_traded_within_3_min exception;
+
+BEGIN
+
+--get data into workspace
+select max(salary), max(position_id)
+into ws_player1_salary, ws_player1_position_id
+from players
+where id = arg_player1;
+
+select max(salarycap)
+into ws_player1_team_sal_cap
+from teams
+where id = arg_team;
+
+select sum(salary) into ws_player1_team_sal_total
+from players join teams on players.team = teams.id
+where teams.id = arg_team
+group by teams.id;
+
+select count(*) into ws_player1_team_count
+from players
+where team = arg_team;
+
+select count(*) into ws_player1_pos_count_team
+from players 
+where position_id = arg_position;
+
+select to_char(sysdate,'hhmi') - to_char(max(trade_time), 'hhmi') into ws_player1_trade_timer
+from transactions 
+where player_id = arg_player1;
+
+
+select max(id) into ws_last_transaction
+from transactions;
+
+--tests:
+
+--if salary caps are gonna be restrictive:
+if ws_player1_team_sal_total + ws_player1_salary > ws_player1_team_sal_cap
+	then raise team1_sal_cap_over_limit;
+end if;
+
+
+
+-- makes sure that if the players aren't in the same position that there's only 1 person in that position already
+if ws_player1_team_count > 6
+		then raise too_many_players;
+end if;
+
+if ws_player1_pos_count_team > 1
+		then raise too_many_position_players;
+end if;
+
+if ws_player1_trade_timer < 3
+ then raise player1_traded_within_3_min;
+end if;
+
+--updates
+update transactions
+set ret_date = sysdate
+where player_id = arg_player1 AND ret_date is NULL;
+
+
+update players
+set team = arg_team
+where id = arg_player1;
+
+
+update transactions
+set ret_date = sysdate
+where player_id = arg_player1;
+
+
+--new transaction
+INSERT INTO transactions 
+VALUES (transactionnum.nextval, arg_player1, null, arg_team, arg_owner_id, sysdate, sysdate, null );
+
+
+--exceptions codes and error messages
+exception
+when team1_sal_cap_over_limit
+   then raise_application_error(-20000, 'team 1 sal cap over limit');    
+   
+when player1_not_tradable
+   then raise_application_error(-20002, 'player 1 not tradable');
+   
+when too_many_players_team
+   then raise_application_error(-20004, 'too many players on team 1');  
+   
+when player1_traded_within_3_min
+   then raise_application_error(-20006, 'player 1 traded within 3 min');
+   
+
+end;
