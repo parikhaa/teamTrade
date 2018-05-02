@@ -46,12 +46,6 @@ from transactions;
 
 --tests:
 
---if salary caps are gonna be restrictive:
-if ws_player1_team_sal_total-ws_player1_salary+ws_player2_salary > ws_player1_team_sal_cap
-	then raise team1_sal_cap_over_limit;
-end if;
-
-
 
 -- makes sure that if the players aren't in the same position that there's only 1 person in that position already
 
@@ -60,9 +54,6 @@ if ws_player1_trade_timer < 3
  then raise player1_traded_within_3_min;
 end if;
 
-if ws_player2_trade_timer < 3
- then raise player2_traded_within_3_min;
-end if;
 
 --updates
 update transactions
@@ -80,7 +71,7 @@ VALUES (ws_last_transaction + 1, arg_player1, ws_player1_team_id, null, arg_owne
 
 
 --exceptions codes and error messages
-exceptions
+exception
 when team1_sal_cap_over_limit
    then raise_application_error(-20000, 'team 1 sal cap over limit');  
 
