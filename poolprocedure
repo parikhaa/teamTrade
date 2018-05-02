@@ -94,7 +94,7 @@ when player1_not_tradable
    then raise_application_error(-20002, 'player 1 not tradable');
    
 when too_many_players_team
-   then raise_application_error(-20004, 'too many players on team 1');  
+   then raise_application_error(-20004, 'too many players on of this position on the team');  
    
 when player1_traded_within_3_min
    then raise_application_error(-20006, 'player 1 traded within 3 min');
