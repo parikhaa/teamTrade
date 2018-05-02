@@ -28,6 +28,7 @@ too_many_players_team1 exception;
 too_many_players_team2 exception;
 player1_traded_within_3_min exception;
 player2_traded_within_3_min exception;
+players_on_same_team exception;
 
 BEGIN
 
@@ -97,6 +98,10 @@ if ws_player1_position_id != ws_player2_position_id
 	end if;
 end if;
 
+if ws_player1_team_id = ws_player2_team_id
+	then raise players_on_same_team;
+end if;
+
 if ws_player1_trade_timer < 3
  then raise player1_traded_within_3_min;
 end if;
@@ -157,6 +162,9 @@ when player1_traded_within_3_min
    
 when player2_traded_within_3_min
    then raise_application_error(-20007, 'player 2 traded within 3 min');
+
+when players_on_same_team
+   then raise_application_error(-20008, 'players on same team');
    
 
 end;
