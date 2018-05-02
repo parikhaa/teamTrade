@@ -38,7 +38,7 @@ select count(*) into ws_player1_pos_count_team
 from players 
 where team = arg_team;
 
-select to_char(sysdate,'hhmi') - to_char(max(trade_time), 'hhmi') into ws_player1_trade_timer
+select abs(to_char(sysdate,'mmddhhmi')- to_char(max(trade_time), 'mmddhhmi')) into ws_player1_trade_timer
 from transactions 
 where player_id = arg_player1;
 
