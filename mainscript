@@ -7,7 +7,7 @@ drop sequence transactionnum;
                                                                           
 create table owners
  (id  number(8) primary key,
-  username varchar2(8),
+  username varchar2(8) not null,
   name  varchar2(25) not null );
 
  create table teams
@@ -38,11 +38,11 @@ create table transactions
   ret_date  date);
 
 insert into owners values (34358354,'CAPACHIE','Jude Capachietti');
-insert into owners values (28815390,'Ben Padden');
+insert into owners values (28815390,'PADDENB','Ben Padden');
 insert into owners values (15280817,'PARIKHAA','Amir Parikh');
-insert into owners values (88874460,'Carter Montgomery');
-insert into owners values (80069894,'Nick Assad');
-insert into owners values (59358385,'Ryan Morgan');
+insert into owners values (88874460,'MONTGOCA','Carter Montgomery');
+insert into owners values (80069894,'ASSADN','Nick Assad');
+insert into owners values (59358385,'MORGANRF','Ryan Morgan');
 
 insert into teams values (1,'Red Sox',1200000,34358354);
 insert into teams values (2,'Yankees',1200000,28815390);
