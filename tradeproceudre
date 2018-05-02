@@ -65,11 +65,11 @@ where team = ws_player1_team_id and position_id = ws_player2_position_id;
 --from transactions 
 --where player_id = arg_player1;
 
-select to_char(sysdate,'hhmi')- to_char(max(trade_time), 'hhmi') into ws_player1_trade_timer
+select abs(to_char(sysdate,'mmddhhmi')- to_char(max(trade_time), 'mmddhhmi')) into ws_player1_trade_timer
 from transactions 
 where player_id = arg_player1;
 
-select to_char(sysdate,'hhmi')- to_char(max(trade_time), 'hhmi') into ws_player2_trade_timer
+select abs(to_char(sysdate,'mmddhhmi')- to_char(max(trade_time), 'mmddhhmi')) into ws_player2_trade_timer
 from transactions 
 where player_id = arg_player2;
 
