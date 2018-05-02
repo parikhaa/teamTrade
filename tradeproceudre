@@ -79,6 +79,12 @@ from transactions;
 
 --tests:
 
+--if players are on same team:
+if ws_player1_team_id = ws_player2_team_id
+	then raise players_on_same_team;
+end if;
+
+
 --if salary caps are gonna be restrictive:
 if ws_player1_team_sal_total-ws_player1_salary+ws_player2_salary > ws_player1_team_sal_cap
 	then raise team1_sal_cap_over_limit;
@@ -96,10 +102,6 @@ if ws_player1_position_id != ws_player2_position_id
 	elsif ws_player2_pos_count_team1 > 1
 		then raise too_many_players_team1;
 	end if;
-end if;
-
-if ws_player1_team_id = ws_player2_team_id
-	then raise players_on_same_team;
 end if;
 
 if ws_player1_trade_timer < 3
