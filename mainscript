@@ -4,7 +4,8 @@ drop table positions;
 drop table teams;
 drop table owners;
 drop sequence transactionnum;
-                                                                          
+drop sequence teamnew;
+
 create table owners
  (id  number(8) primary key,
   username varchar2(8) not null,
@@ -92,4 +93,5 @@ insert into players values (34,'Aaron Judge',null,3,300000);
 insert into players values (35,'JD Martinez',null,3,300000);
 insert into players values (36,'Jon Lester',null,3,300000);
 
-create sequence transactionnum increment by 1 start with 101
+create sequence transactionnum increment by 1 start with 101;
+create sequence transactionnum increment by 1 start with 6;
